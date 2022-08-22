@@ -17,11 +17,13 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
+        long startTime = System.currentTimeMillis();
+
         ArrayList<Thread> threads = new ArrayList<>();
 
-        for (int threadNumber = 0; threadNumber < 4; ++threadNumber) {
+        for (int threadNumber = 0; threadNumber < 10; ++threadNumber) {
             Thread thread = new Thread(() -> {
-                for (int i = 0; i < 250_000; ++i) {
+                for (int i = 0; i < 100_000; ++i) {
                 synchronized (lock) {
                     number++;
                     numberSqrt = Math.sqrt(number);
@@ -43,5 +45,8 @@ public class Main {
                             writer.newLine();
                         }
                     } catch (IOException exc) {}
+
+        long end = System.currentTimeMillis();
+        System.out.println("Took: " + (end - startTime) + " ms");
     }
 }
