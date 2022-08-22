@@ -13,9 +13,9 @@ public class Main {
     private static  Object lock = new Object();
     private static double number = 0;
     private static double numberSqrt = 0;
-    private static List<Double> sqrt = Collections.synchronizedList(new ArrayList<Double>());
+    private static List<Double> sqrt = Collections.synchronizedList(new ArrayList<>());
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         ArrayList<Thread> threads = new ArrayList<>();
 
@@ -32,6 +32,9 @@ public class Main {
             threads.add(thread);
             thread.start();
         }
+        for (Thread thread : threads) {
+            thread.join();
+        }
 
         File file = new File("SQRT.txt");
                     try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
@@ -39,6 +42,6 @@ public class Main {
                             writer.write(String.valueOf(line));
                             writer.newLine();
                         }
-                    } catch (IOException ignored) {}
+                    } catch (IOException exc) {}
     }
 }
