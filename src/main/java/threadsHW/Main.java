@@ -13,6 +13,8 @@ public class Main {
     private static  Object lock = new Object();
     private static double number = 0;
     private static double numberSqrt = 0;
+    private static double endCounter = 1_000_000;
+    private static double numberOfThreads = 10;
     private static List<Double> sqrt = Collections.synchronizedList(new ArrayList<>());
 
     public static void main(String[] args) throws InterruptedException {
@@ -21,14 +23,14 @@ public class Main {
 
         ArrayList<Thread> threads = new ArrayList<>();
 
-        for (int threadNumber = 0; threadNumber < 10; ++threadNumber) {
+        for (int threadNumber = 0; threadNumber < numberOfThreads; ++threadNumber) {
             Thread thread = new Thread(() -> {
-                for (int i = 0; i < 100_000; ++i) {
+                for (int i = 0; i < (endCounter / numberOfThreads); ++i) {
                 synchronized (lock) {
                     number++;
+                }
                     numberSqrt = Math.sqrt(number);
                     sqrt.add(numberSqrt);
-                    }
                 }
             });
             threads.add(thread);
