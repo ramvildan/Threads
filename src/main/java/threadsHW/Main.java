@@ -5,36 +5,35 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class Main {
-
-    private static  Object lock = new Object();
-    private static double number = 0;
-    private static double numberSqrt = 0;
-    private static double endCounter = 1_000_000;
-    private static double numberOfThreads = 10;
-    private static List<Double> sqrt = Collections.synchronizedList(new ArrayList<>());
 
     public static void main(String[] args) throws InterruptedException {
 
         long startTime = System.currentTimeMillis();
 
-        ArrayList<Thread> threads = new ArrayList<>();
+        int amountOfNumbers = 1_000_000;
+        int numberOfThreads = 4;
+        int workOfThreads = amountOfNumbers / numberOfThreads;
 
-        for (int threadNumber = 0; threadNumber < numberOfThreads; ++threadNumber) {
+        ArrayList<Thread> threads = new ArrayList<>();
+        ArrayList<ArrayList<Double>> arrays = new ArrayList<>();
+
+        for (int threadNumber = 0; threadNumber < numberOfThreads; threadNumber++) {
+            int start = workOfThreads * threadNumber;
+            int end = start + workOfThreads;
+            ArrayList<Double> numbers = new ArrayList<>(workOfThreads);
+
             Thread thread = new Thread(() -> {
-                for (int i = 0; i < (endCounter / numberOfThreads); ++i) {
-                synchronized (lock) {
-                    number++;
-                }
-                    numberSqrt = Math.sqrt(number);
-                    sqrt.add(numberSqrt);
+
+                for (int i = start; i <= end; i++) {
+                    double result = Math.sqrt(i);
+                    numbers.add(result);
                 }
             });
             threads.add(thread);
             thread.start();
+            arrays.add(numbers);
         }
         for (Thread thread : threads) {
             thread.join();
@@ -42,7 +41,7 @@ public class Main {
 
         File file = new File("SQRT.txt");
                     try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                        for (Double line : sqrt) {
+                        for (ArrayList<Double> line : arrays) {
                             writer.write(String.valueOf(line));
                             writer.newLine();
                         }
